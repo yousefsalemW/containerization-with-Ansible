@@ -12,14 +12,14 @@
 ## التشغيل
 
 \`\`\`bash
-# تثبيت Docker على كل الماشينات
+# تثبيت Docker على كل ال Machines 
 ansible-playbook install-docker.yml
 
 # نشر الموقع
 ansible-playbook deploy-webapp.yml
 \`\`\`
 
-بعد التشغيل، الموقع بيكون متاح على البورت 8080 على كل ماشين.
+بعد التشغيل، الموقع بيكون متاح على البورت 8080 على كل Machines .
 
 ## البيئة
 
