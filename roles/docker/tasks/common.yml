@@ -1,0 +1,23 @@
+---
+ 
+- name: Enable and start Docker service
+  ansible.builtin.systemd:
+    name: docker
+    state: started
+    enabled: true
+ 
+- name: Add user to docker group
+  ansible.builtin.user:
+    name: "{{ docker_user }}"
+    groups: docker
+    append: true
+  when: docker_user is defined and docker_user | length > 0
+ 
+- name: Verify Docker version
+  ansible.builtin.command: docker --version
+  register: docker_version
+  changed_when: false
+ 
+- name: Show Docker version
+  ansible.builtin.debug:
+    msg: "{{ docker_version.stdout }}"      

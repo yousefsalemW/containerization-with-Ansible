@@ -1,0 +1,6 @@
+---
+- name: Deploy web container on all hosts
+  hosts: production
+  become: true
+  roles:
+    - webapp

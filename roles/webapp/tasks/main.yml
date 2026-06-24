@@ -1,0 +1,51 @@
+---
+# roles/webapp/tasks/main.yml
+# نشر موقع EFE-EGY كـ container على كل الماشينات
+
+# ---- تجهيز Docker SDK for Python (مطلوب لموديول docker_container) ----
+- name: Install Docker SDK for Python (Debian)
+  ansible.builtin.apt:
+    name: python3-docker
+    state: present
+    update_cache: true
+  when: ansible_os_family == "Debian"
+
+# على RedHat نعزل الـ SDK في virtualenv عشان نتجنب تعارض
+# نسخ المكتبات مع حزم النظام
+- name: Install pip and virtualenv (RedHat)
+  ansible.builtin.dnf:
+    name:
+      - python3-pip
+      - python3-virtualenv
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: Install Docker SDK in an isolated venv (RedHat)
+  ansible.builtin.pip:
+    name:
+      - docker
+      - requests
+    state: present
+    virtualenv: /opt/docker-sdk-venv
+    virtualenv_command: python3 -m venv
+  when: ansible_os_family == "RedHat"
+
+# ---- نشر الـ container ----
+- name: Run the efe-egy-web container
+  community.docker.docker_container:
+    name: "{{ webapp_container_name }}"
+    image: "{{ webapp_image }}"
+    state: started
+    restart_policy: unless-stopped
+    pull: true
+    published_ports:
+      - "{{ webapp_host_port }}:{{ webapp_container_port }}"
+  vars:
+    ansible_python_interpreter: >-
+      {{ '/opt/docker-sdk-venv/bin/python'
+         if ansible_os_family == 'RedHat'
+         else ansible_python_interpreter | default('/usr/bin/python3') }}
+
+- name: Show access URL
+  ansible.builtin.debug:
+    msg: "الموقع شغّال على  http://{{ ansible_host | default(inventory_hostname) }}:{{ webapp_host_port }}"

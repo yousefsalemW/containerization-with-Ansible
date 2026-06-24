@@ -1,0 +1,10 @@
+# ملفات Docker المؤقتة
+*.tar
+
+# ملفات Ansible المؤقتة
+*.retry
+
+# ملفات النظام
+.DS_Store
+*.swp
+*~

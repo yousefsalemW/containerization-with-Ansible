@@ -1,0 +1,11 @@
+---
+- name: install-docker-on-debian
+  ansible.builtin.import_tasks: debian.yml
+  when: ansible_os_family == "Debian"
+
+- name: install-docker-on-redhat
+  ansible.builtin.import_tasks: redhat.yml
+  when: ansible_os_family == "RedHat"
+  
+- name: Run-comman-install
+  ansible.builtin.import_tasks: common.yml

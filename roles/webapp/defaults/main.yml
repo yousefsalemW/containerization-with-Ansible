@@ -1,0 +1,8 @@
+---
+webapp_container_name: efe-egy-web
+ 
+webapp_image: alnaqib/efe-egy-web:latest
+ 
+webapp_host_port: 8080
+ 
+webapp_container_port: 80
