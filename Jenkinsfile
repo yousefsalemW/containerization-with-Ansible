@@ -1,11 +1,6 @@
+```groovy
 pipeline {
     agent any
-
-    environment {
-        IMAGE_NAME = "containerization-app"
-        IMAGE_TAG  = "latest"
-        CONTAINER  = "containerization-app"
-    }
 
     stages {
 
@@ -24,34 +19,19 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Run Ansible Playbooks') {
             steps {
-                echo "Building Docker image..."
-                sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
-            }
-        }
+                echo "Installing Docker..."
+                sh 'ansible-playbook install-docker.yml'
 
-        stage('Remove Old Container') {
-            steps {
-                echo "Removing old container if it exists..."
-
-                sh 'docker stop ${CONTAINER} || true'
-                sh 'docker rm ${CONTAINER} || true'
-            }
-        }
-
-        stage('Run Container') {
-            steps {
-                echo "Starting new container..."
-
-                sh 'docker run -d --name ${CONTAINER} -p 3000:3000 ${IMAGE_NAME}:${IMAGE_TAG}'
+                echo "Deploying Web Application..."
+                sh 'ansible-playbook deploy-webapp.yml'
             }
         }
 
         stage('Verification') {
             steps {
-                echo "Checking running containers..."
-
+                echo "Checking Docker containers..."
                 sh 'docker ps'
             }
         }
@@ -70,6 +50,6 @@ pipeline {
         always {
             echo "Pipeline execution finished."
         }
-
     }
 }
+```
